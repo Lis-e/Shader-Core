@@ -241,7 +241,7 @@ public partial class SCMaterialEditor : MaterialEditor
         base.OnDisable();
     }
 
-    private void Update() => root.visible = isVisible;
+    private void Update() => root.style.display = isVisible ? DisplayStyle.Flex : DisplayStyle.None;
 
     public void ShaderProperty(VisualElement container, MaterialProperty prop, string[] attributes = null)
     {
