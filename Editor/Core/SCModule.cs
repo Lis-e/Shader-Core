@@ -100,7 +100,7 @@ namespace jp.lilxyzw.shadercore
                 if (i != -1) line = line.Replace("__N__", NumParser.ToString(i));
                 if (module.properties != null)
                     foreach (var prop in module.properties)
-                        if (!string.IsNullOrEmpty(prop.originalName)) line = Regex.Replace(
+                        if (!string.IsNullOrEmpty(prop.originalName) && line.Contains(prop.originalName)) line = Regex.Replace(
                             line,
                             @"([^\w])("+prop.originalName+(prop.type=="ScaleOffset"?scaleOffsetPostfix:"")+@")([^\w])",
                             @"$1"+prop.name+(prop.type=="ScaleOffset"?scaleOffsetPostfix:"")+@"$3"
