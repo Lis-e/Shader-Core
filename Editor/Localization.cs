@@ -68,7 +68,11 @@ namespace jp.lilxyzw.shadercore
 
         public static string[] GetLanguages()
         {
-            return languages ??= AssetUtils.GetFiles("*.po").Select(p => Path.GetFileNameWithoutExtension(p)).Distinct()
+            return languages ??= new[]{"en-US"}.Union(AssetUtils.GetFiles("*.scmodule").Union(AssetUtils.GetFiles("*.scshader"))
+                .Select(p => Path.GetDirectoryName(p) + "/lang")
+                .Where(p => Directory.Exists(p))
+                .SelectMany(p => AssetUtils.GetFiles("*.po", p))
+                .Select(p => Path.GetFileNameWithoutExtension(p))).Distinct()
                 .Where(c => {
                     if (string.IsNullOrEmpty(c) || !REG_LANGCODE.IsMatch(c)) return false;
                     try
