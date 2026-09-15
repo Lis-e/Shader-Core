@@ -1,6 +1,10 @@
 #pragma vertex vert
 #pragma fragment frag
 
+#include "Packages/com.unity.render-pipelines.universal-config/Runtime/ShaderConfig.cs.hlsl"
+#undef USE_DYNAMIC_BRANCH_FOG_KEYWORD
+#define USE_DYNAMIC_BRANCH_FOG_KEYWORD 1
+
 #if defined(UNITY_PLATFORM_META_QUEST)
 #pragma multi_compile _ META_QUEST_LIGHTUNROLL
 #endif
