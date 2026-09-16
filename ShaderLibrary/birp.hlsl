@@ -263,9 +263,9 @@ float SCGetFrameDepth(float2 uv)
     {
         uv = ClampScreenUV(uv);
         #if UNITY_UV_STARTS_AT_TOP
-            if(_ProjectionParams.x > 0) uv.y = _ScreenParams.y - uv.y;
+            if(_ProjectionParams.x > 0) uv.y = 1.0 - uv.y;
         #else
-            if(_ProjectionParams.x < 0) uv.y = _ScreenParams.y - uv.y;
+            if(_ProjectionParams.x < 0) uv.y = 1.0 - uv.y;
         #endif
         float cameraDepthTexture = SampleDepth(uv);
         #if UNITY_REVERSED_Z

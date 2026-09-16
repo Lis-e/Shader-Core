@@ -218,9 +218,9 @@ float SCGetFrameDepth(float2 uv)
     if(SCIsFrameDepthGenerated())
     {
         #if UNITY_UV_STARTS_AT_TOP
-            if(_ProjectionParams.x > 0) uv.y = _ScreenParams.y - uv.y;
+            if(_ProjectionParams.x > 0) uv.y = 1.0 - uv.y;
         #else
-            if(_ProjectionParams.x < 0) uv.y = _ScreenParams.y - uv.y;
+            if(_ProjectionParams.x < 0) uv.y = 1.0 - uv.y;
         #endif
         float2 uv2 = ClampAndScaleUVForBilinear(UnityStereoTransformScreenSpaceTex(uv), _CameraDepthTexture_TexelSize.xy);
         float cameraDepthTexture = SAMPLE_TEXTURE2D_X_LOD(_CameraDepthTexture, sampler_PointClamp, uv2, 0).r;
