@@ -11,6 +11,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
         public TextureFormat format = TextureFormat.BC7;
         public int width = 1024;
         public int height = 1024;
+        public bool streamingMipmaps = true;
         public MaskParam[] masks = {new()};
 
         [MenuItem("Assets/Create/ShaderCore/Masks")]
@@ -27,6 +28,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
             }
 
             texture.Apply(false, false);
+            TextureUtils.SetStreamingMipmaps(texture, streamingMipmaps);
             ctx.AddObjectToAsset("Texture", texture);
             ctx.SetMainObject(texture);
         }

@@ -11,6 +11,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
     {
         private VisualElement root;
         private PopupField<int> size;
+        private PropertyField streamingMipmaps;
         private PropertyField gradients;
         public List<int> widths = new(){
             4,
@@ -30,6 +31,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
             root = new VisualElement();
             root.Bind(serializedObject);
             root.Add(size = new() { bindingPath = "size", choices = widths, label = "Width" });
+            root.Add(streamingMipmaps = new() { bindingPath = "streamingMipmaps" });
             root.Add(gradients = new() { bindingPath = "gradients" });
             root.Add(new IMGUIContainer(ApplyRevertGUI));
             return root;

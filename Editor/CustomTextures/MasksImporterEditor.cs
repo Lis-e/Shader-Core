@@ -13,6 +13,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
         private PropertyField format;
         private PopupField<int> width;
         private PopupField<int> height;
+        private PropertyField streamingMipmaps;
         private PropertyField masks;
         public List<int> widths = new(){
             32,
@@ -36,6 +37,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
             root.Add(format = new() { bindingPath = "format" });
             root.Add(width = new() { bindingPath = "width", choices = widths, label = "Width" });
             root.Add(height = new() { bindingPath = "height", choices = widths, label = "Height" });
+            root.Add(streamingMipmaps = new() { bindingPath = "streamingMipmaps" });
             root.Add(masks = new() { bindingPath = "masks" });
             root.Add(new IMGUIContainer(ApplyRevertGUI));
             return root;

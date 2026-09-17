@@ -1,9 +1,23 @@
+using UnityEditor;
 using UnityEngine;
 
 namespace jp.lilxyzw.shadercore
 {
     internal static class TextureUtils
     {
+        // テクスチャのミップストリーミング設定を適用
+        public static void SetStreamingMipmaps(Texture texture, bool enabled)
+        {
+            if (!texture) return;
+            var so = new SerializedObject(texture);
+            var prop = so.FindProperty("m_StreamingMipmaps");
+            if (prop != null)
+            {
+                prop.boolValue = enabled;
+                so.ApplyModifiedPropertiesWithoutUndo();
+            }
+        }
+
         // テクスチャから任意のチャンネル・インデックスを取得
         private static readonly int id_MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int id_MainTexArray = Shader.PropertyToID("_MainTexArray");

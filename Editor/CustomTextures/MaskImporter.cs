@@ -10,6 +10,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
         public TextureFormat format = TextureFormat.BC7;
         public int width = 1024;
         public int height = 1024;
+        public bool streamingMipmaps = true;
         public ChannelParam R = new();
         public ChannelParam G = new();
         public ChannelParam B = new();
@@ -21,6 +22,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
         public override void OnImportAsset(AssetImportContext ctx)
         {
             var texture = MaskGenerator.Generate(R, G, B, A, format, width, height);
+            TextureUtils.SetStreamingMipmaps(texture, streamingMipmaps);
             ctx.AddObjectToAsset("Texture", texture);
             ctx.SetMainObject(texture);
         }

@@ -8,6 +8,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
     internal class GradientsImporter : ScriptedImporter
     {
         public int size = 128;
+        public bool streamingMipmaps = true;
         public Gradient[] gradients = {new()};
 
         [MenuItem("Assets/Create/ShaderCore/Gradients")]
@@ -25,6 +26,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
                 }
             }
             texture.Apply();
+            TextureUtils.SetStreamingMipmaps(texture, streamingMipmaps);
             ctx.AddObjectToAsset("Texture", texture);
             ctx.SetMainObject(texture);
         }

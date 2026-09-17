@@ -13,6 +13,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
         private PropertyField format;
         private PopupField<int> width;
         private PopupField<int> height;
+        private PropertyField streamingMipmaps;
         private PropertyField R;
         private PropertyField G;
         private PropertyField B;
@@ -39,6 +40,7 @@ namespace jp.lilxyzw.shadercore.CustomTextures
             root.Add(format = new() { bindingPath = "format" });
             root.Add(width = new() { bindingPath = "width", choices = widths, label = "Width" });
             root.Add(height = new() { bindingPath = "height", choices = widths, label = "Height" });
+            root.Add(streamingMipmaps = new() { bindingPath = "streamingMipmaps" });
             root.Add(R = new() { bindingPath = "R" });
             root.Add(G = new() { bindingPath = "G" });
             root.Add(B = new() { bindingPath = "B" });
