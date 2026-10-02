@@ -19,6 +19,7 @@ namespace jp.lilxyzw.shadercore
         [NonSerialized] public string path;
         [NonSerialized] public string includes;
         [NonSerialized] public int count;
+        private static readonly Regex REG_INCLUDE = new(@"^\s*#include\s*""([^""]*)""\s*(//|$)");
 
         public static SCModule FromShaderFile(string path)
         {
@@ -43,7 +44,21 @@ namespace jp.lilxyzw.shadercore
             if (File.Exists(proppath_multi)) module.properties_multi = SCProperty.FromFile(proppath_multi, module.keepPropertyNames ? "" : module.uniqueID);
 
             var includespath = $"{directory}includes.hlsl";
-            if (File.Exists(includespath)) module.includes = File.ReadAllText(includespath);
+            if (File.Exists(includespath))
+            {
+                var sb = new StringBuilder();
+                using var sr = new StreamReader(includespath);
+                string line;
+                while((line = sr.ReadLine()) != null)
+                {
+                    var match = REG_INCLUDE.Match(line);
+                    if (match.Success && File.Exists($"{directory}{match.Groups[1].Value}"))
+                        line = $"#include \"{directory}{match.Groups[1].Value}\"";
+                    sb.AppendLine(line);
+                }
+
+                module.includes = sb.ToString();
+            }
 
             module.phases.AddRange(Directory.GetFiles(directory, "phase_*.hlsl").Select(n => new SCPhase(){phase = Regex.Match(n, @"phase_(\w+)\.hlsl").Groups[1].Value}));
 
