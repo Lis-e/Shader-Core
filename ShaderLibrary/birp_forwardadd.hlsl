@@ -1,7 +1,7 @@
 #pragma vertex vert
 #pragma fragment frag
 #pragma multi_compile_fwdadd_fullshadows
-#pragma multi_compile_fog
+#pragma dynamic_branch _ FOG_LINEAR FOG_EXP FOG_EXP2
 #pragma multi_compile_instancing
 
 #include "UnityCG.cginc"
@@ -28,9 +28,8 @@ struct v2f
     float3 N : TEXCOORD5;
     float4 T : TEXCOORD6;
     UNITY_LIGHTING_COORDS(7,8)
-    UNITY_FOG_COORDS(9)
     #ifdef SC_CUSTOM_V2F
-        SCCustomV2F customV2f : TEXCOORD10;
+        SCCustomV2F customV2f : TEXCOORD9;
     #endif
     UNITY_VERTEX_INPUT_INSTANCE_ID
     UNITY_VERTEX_OUTPUT_STEREO
@@ -68,7 +67,6 @@ v2f vert(appdata v)
 
     o.pos = UnityWorldToClipPos(vertex.position);
     UNITY_TRANSFER_LIGHTING(o, v.uv[1].xy);
-    UNITY_TRANSFER_FOG(o,o.pos);
 
     SCOutputSVPosition(o, vertex, camera, head, headBone);
 
@@ -104,11 +102,37 @@ v2f SCInterpolateV2F(v2f i[3], float3 blend)
     o._ShadowCoord = i[0]._ShadowCoord * blend.x + i[1]._ShadowCoord * blend.y + i[2]._ShadowCoord * blend.z;
     #endif
 
-    #if defined(FOG_LINEAR) || defined(FOG_EXP) || defined(FOG_EXP2)
-    o.fogCoord = i[0].fogCoord * blend.x + i[1].fogCoord * blend.y + i[2].fogCoord * blend.z;
-    #endif
-
     return o;
 }
+
+void SCApplyFog(SCVertexData vertex, inout half3 col)
+{
+    half fogCoord = UNITY_Z_0_FAR_FROM_CLIPSPACE(UnityWorldToClipPos(vertex.position.xyz).z);
+    half fogFactor = 1.0;
+
+    if (FOG_LINEAR)
+    {
+        fogFactor = saturate(fogCoord * unity_FogParams.z + unity_FogParams.w);
+    }
+    else if (FOG_EXP)
+    {
+        fogFactor = unity_FogParams.y * fogCoord;
+        fogFactor = saturate(exp2(-fogFactor));
+    }
+    else if(FOG_EXP2)
+    {
+        fogFactor = unity_FogParams.x * fogCoord;
+        fogFactor = saturate(exp2(-fogFactor*fogFactor));
+    }
+
+    #ifdef UNITY_PASS_FORWARDADD
+    col.rgb = lerp(half3(0,0,0), col.rgb, fogFactor);
+    #else
+    col.rgb = lerp(unity_FogColor.rgb, col.rgb, fogFactor);
+    #endif
+}
+
+#undef UNITY_APPLY_FOG
+#define UNITY_APPLY_FOG(coord,col) SCApplyFog(vertex,col.rgb)
 
 // ピクセルシェーダーは自由に書く
