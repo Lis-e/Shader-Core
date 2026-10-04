@@ -1,10 +1,11 @@
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace jp.lilxyzw.shadercore
 {
-    public class SCRemap : Vector2Field, IMaterialPropertyElement
+    internal class SCRemap : Vector2Field, IMaterialPropertyElement
     {
         public MaterialProperty Property { get; set; }
         public string ModuleID { get; set; }
