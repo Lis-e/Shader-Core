@@ -31,6 +31,7 @@ namespace jp.lilxyzw.shadercore
             AttributeActions.AddDrawer("SCVector2", (a,b,c,d) => SCVector(a,b,"2",d));
             AttributeActions.AddDrawer("SCVector3", (a,b,c,d) => SCVector(a,b,"3",d));
             AttributeActions.AddDrawer("SCVector4", (a,b,c,d) => SCVector(a,b,"4",d));
+            AttributeActions.AddDrawer("SCRemap", SCRemap);
             AttributeActions.AddDrawer("SCHDR", SCHDR);
             AttributeActions.AddDrawer("SCMask", SCMask);
             AttributeActions.AddDrawer("SCMasks", SCMasks);
@@ -48,22 +49,37 @@ namespace jp.lilxyzw.shadercore
 
         private static void SCFoldout(SCMaterialEditor editor, MaterialProperty prop, string args)
         {
-            var foldout = new SCFoldout(prop.name+args, args);
+            bool isSimple = args == "SimpleFoldout";
+            if (isSimple || string.IsNullOrEmpty(args)) args = " ";
+            var foldout = new SCFoldout(prop.name+args, args, !isSimple);
             if (prop.targets[0] is Material m && m.shader is Shader shader)
             {
                 var attributes = shader.GetPropertyAttributes(shader.FindPropertyIndex(prop.name));
                 foreach (var attr in attributes)
                 {
                     if (attr != "SCInHeader") continue;
-                    var container = new VisualElement();
+                    var container = editor.GetPropertyContainer(prop);
                     container.style.flexGrow = 0;
-                    container.style.marginBottom = 0;
-                    container.style.marginLeft = -6;
-                    container.style.marginRight = 4;
-                    container.style.marginTop = 1;
+                    var lockProperty = container.Q<SCLockProperty>();
+                    lockProperty.style.marginLeft = lockProperty.style.marginLeft.value.value - 12f;
+                    lockProperty.style.marginRight = lockProperty.style.marginRight.value.value + 12f;
+                    if (isSimple)
+                    {
+                        container.style.marginBottom = 0;
+                        container.style.marginLeft = -4;
+                        container.style.marginRight = 0;
+                        container.style.marginTop = 1;
+                    }
+                    else
+                    {
+                        container.style.marginBottom = 0;
+                        container.style.marginLeft = -6;
+                        container.style.marginRight = 4;
+                        container.style.marginTop = 1;
+                    }
                     editor.ShaderProperty(container, prop, attributes);
                     var label = foldout.Q(null, Toggle.textUssClassName);
-                    var parent = label.parent;
+                    var parent = isSimple ? foldout.Header : label.parent;
                     label.style.flexGrow = 1;
                     parent.Add(container);
                     parent.Add(label);
@@ -129,6 +145,11 @@ namespace jp.lilxyzw.shadercore
             if (args == "2") container.Add(new SCVector2Field(prop));
             else if (args == "3") container.Add(new SCVector3Field(prop));
             else container.Add(new SCVector4Field(prop));
+        }
+
+        private static void SCRemap(SCMaterialEditor editor, MaterialProperty prop, string args, VisualElement container)
+        {
+            container.Add(new SCRemap(prop));
         }
 
         private static void SCHDR(SCMaterialEditor editor, MaterialProperty prop, string args, VisualElement container)

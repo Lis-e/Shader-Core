@@ -302,7 +302,7 @@ public partial class SCMaterialEditor : MaterialEditor
         }
     }
 
-    private VisualElement GetPropertyContainer(params object[] objs)
+    internal VisualElement GetPropertyContainer(params object[] objs)
     {
         var container = new SCPropertyContainer(tempParent, targets, objs);
         tempParent.Add(container);

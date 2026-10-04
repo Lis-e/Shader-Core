@@ -33,11 +33,13 @@ half3 SCVertexLighting(float3 positionWS)
     return vertexLightColor;
 }
 
-void SCCalculateLight(inout SCLightData lightSum, inout SCShadingData sd, inout SCCustomData cd, SCVertexData vertex, Light lightIn)
+void SCCalculateLight(inout SCLightData lightSum, inout SCShadingData sd, inout SCCustomData cd, SCVertexData vertex, Light lightIn, bool useShadow, uint type)
 {
     SCLightData light;
     light.direction = lightIn.direction;
     light.color = lightIn.color * (lightIn.distanceAttenuation * lightIn.shadowAttenuation);
+    light.useShadow = useShadow;
+    light.type = type;
     SCCalculateLight(lightSum, sd, cd, vertex, light);
 }
 
@@ -53,6 +55,25 @@ float3 GetOffsetPosition(uint index, SCVertexData vertex)
     float3 lightVector = lightPositionWS.xyz - vertex.position * lightPositionWS.w;
     float distanceSqr = max(dot(lightVector, lightVector), 1.1);
     return vertex.position + lightVector * rsqrt(distanceSqr) * vertex.shadowOffset;
+}
+
+bool GetShadowEnabled(uint index)
+{
+    return GetAdditionalLightShadowParams(index).w >= 0;
+}
+
+uint GetLightType(uint index)
+{
+    #if USE_STRUCTURED_BUFFER_FOR_LIGHT_DATA
+    half4 distanceAndSpotAttenuation = _AdditionalLightsBuffer[index].attenuation;
+    #else
+    half4 distanceAndSpotAttenuation = _AdditionalLightsAttenuation[index];
+    #endif
+
+    // Packages/com.unity.render-pipelines.universal/Runtime/UniversalRenderPipelineCore.cs
+    if (distanceAndSpotAttenuation.x == 0) return 1; // Directional
+    if (distanceAndSpotAttenuation.z == 0) return 2; // Point
+    return 3; // Spot
 }
 
 void SCCalculateAllLights(inout SCLightData lightSum, inout half3 env, inout SCShadingData sd, inout SCCustomData cd, SCVertexData vertex, v2f i, half3 vertexLighting)
@@ -166,7 +187,11 @@ void SCCalculateAllLights(inout SCLightData lightSum, inout half3 env, inout SCS
     if (IsMatchingLightLayer(mainLight.layerMask, meshRenderingLayers))
 #endif
     {
-        SCCalculateLight(lightSum, sd, cd, vertex, mainLight);
+        #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE) || defined(_MAIN_LIGHT_SHADOWS_SCREEN)
+        SCCalculateLight(lightSum, sd, cd, vertex, mainLight, true, 1);
+        #else
+        SCCalculateLight(lightSum, sd, cd, vertex, mainLight, false, 1);
+        #endif
     }
 
     #if defined(_ADDITIONAL_LIGHTS)
@@ -183,7 +208,7 @@ void SCCalculateAllLights(inout SCLightData lightSum, inout half3 env, inout SCS
         if (IsMatchingLightLayer(light.layerMask, meshRenderingLayers))
         #endif
         {
-            SCCalculateLight(lightSum, sd, cd, vertex, light);
+            SCCalculateLight(lightSum, sd, cd, vertex, light, GetShadowEnabled(lightIndex), GetLightType(lightIndex));
         }
     }
     #endif
@@ -198,7 +223,7 @@ void SCCalculateAllLights(inout SCLightData lightSum, inout half3 env, inout SCS
 #if defined(UNITY_PLATFORM_META_QUEST)
             if(light.distanceAttenuation > 0.0)
 #endif
-            SCCalculateLight(lightSum, sd, cd, vertex, light);
+            SCCalculateLight(lightSum, sd, cd, vertex, light, GetShadowEnabled(lightIndex), GetLightType(lightIndex));
         }
     LIGHT_LOOP_END
     #endif

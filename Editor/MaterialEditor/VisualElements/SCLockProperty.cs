@@ -106,7 +106,7 @@ namespace jp.lilxyzw.shadercore
 
         private void Offset(VisualElement p)
         {
-            if (p is SCFoldout) style.marginLeft = style.marginLeft.value.value - 16f;
+            if (p is SCFoldout foldout) style.marginLeft = style.marginLeft.value.value - foldout.contentContainer.style.marginLeft.value.value;
             else style.marginLeft = style.marginLeft.value.value - p.style.marginLeft.value.value - p.style.borderLeftWidth.value - p.style.paddingLeft.value.value;
         }
 

@@ -103,6 +103,11 @@ half3 SCUnpackNormalAndRoughness(half4 tex, half scale, inout half2 roughness, b
     return normal;
 }
 
+half SCRemap(half a, half4 remap)
+{
+    return saturate(a * remap.x + remap.y);
+}
+
 SCPositionAndDirection SCGetCameraData()
 {
     SCPositionAndDirection camera = (SCPositionAndDirection)0;

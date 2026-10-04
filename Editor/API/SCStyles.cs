@@ -11,6 +11,7 @@ namespace jp.lilxyzw.shadercore
         public static void ApplyPopupStyle<T>(PopupField<T> element)
         {
             element.Q(null, "unity-base-popup-field__text").parent.style.backgroundColor = popup_backcol;
+            element.style.overflow = Overflow.Visible;
         }
 
         private static readonly Color vector_textcol = EditorGUIUtility.isProSkin ? new(1,1,1,0.3f) : new(0,0,0,0.4f);

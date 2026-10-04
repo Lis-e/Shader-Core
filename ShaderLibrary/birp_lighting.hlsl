@@ -5,7 +5,6 @@
 // をピクセルシェーダーで実行すると自動でなんとかする
 
 // 指向性を無視して頂点ライティング
-// VertexLighting() in Packages/com.unity.render-pipelines.universal/ShaderLibrary/ShaderLibrary/Lighting.hlsl
 half3 SCVertexLighting(float3 positionWS)
 {
     half3 vertexLightColor = half3(0.0, 0.0, 0.0);
@@ -101,6 +100,21 @@ void SCCalculateAllLights(inout SCLightData lightSum, inout half3 env, inout SCS
         #elif defined(UNITY_PASS_FORWARDADD)
             light.direction = normalize(UnityWorldSpaceLightDir(vertex.position));
         #endif
+
+        #if defined(SHADOWS_DEPTH) || defined(SHADOWS_SCREEN) || defined(SHADOWS_CUBE)
+        light.useShadow = true;
+        #else
+        light.useShadow = false;
+        #endif
+
+        #if defined(POINT) || defined(POINT_COOKIE)
+        light.type = 2;
+        #elif defined(SPOT)
+        light.type = 3;
+        #else
+        light.type = 1;
+        #endif
+
         SCCalculateLight(lightSum, sd, cd, vertex, light);
     #endif
 

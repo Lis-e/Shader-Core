@@ -68,6 +68,9 @@ msgstr "メインカラーを乗算"
 msgid "__MaskChannel"
 msgstr "マスクチャンネル"
 
+msgid "__Remap"
+msgstr "再マッピング"
+
 msgid "__Stencil"
 msgstr "ステンシル"
 
@@ -97,3 +100,9 @@ msgstr "テクスチャを作成"
 
 msgid "__EditTexture"
 msgstr "テクスチャを編集"
+
+msgid "__Normal"
+msgstr "通常"
+
+msgid "__Invert"
+msgstr "反転"

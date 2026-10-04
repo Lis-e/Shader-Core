@@ -12,10 +12,11 @@ namespace jp.lilxyzw.shadercore
         private static readonly Color backcol = EditorGUIUtility.isProSkin ? new Color(1,1,1,0.15f) : new Color(0,0,0,0.15f);
         private static readonly Color bordercol = EditorGUIUtility.isProSkin ? new(0,0,0,0.5f) : new(0,0,0,0.15f);
         private readonly VisualElement m_header;
+        public VisualElement Header => m_header;
         private static readonly FieldInfo FI_m_Clickable = typeof(BaseBoolField).GetField("m_Clickable", BindingFlags.Instance | BindingFlags.NonPublic);
         private readonly string moduleID;
 
-        public SCFoldout(string key, string label)
+        public SCFoldout(string key, string label, bool isHeader = true)
         {
             moduleID = L10n.currentID;
             text = L10n.L(label);
@@ -27,25 +28,43 @@ namespace jp.lilxyzw.shadercore
             });
 
             m_header = new();
-            m_header.style.marginBottom = 0;
-            m_header.style.marginLeft = 0;
-            m_header.style.marginRight = 0;
-            m_header.style.marginTop = 1;
-            m_header.style.borderBottomWidth = 1;
-            m_header.style.borderLeftWidth = 0;
-            m_header.style.borderRightWidth = 0;
-            m_header.style.borderTopWidth = 0;
-            m_header.style.paddingBottom = 0;
-            m_header.style.paddingLeft = 0;
-            m_header.style.paddingRight = 0;
-            m_header.style.paddingTop = 0;
+            if (isHeader)
+            {
+                m_header.style.marginBottom = 0;
+                m_header.style.marginLeft = 0;
+                m_header.style.marginRight = 0;
+                m_header.style.marginTop = 1;
+                m_header.style.borderBottomWidth = 1;
+                m_header.style.borderLeftWidth = 0;
+                m_header.style.borderRightWidth = 0;
+                m_header.style.borderTopWidth = 0;
+                m_header.style.paddingBottom = 0;
+                m_header.style.paddingLeft = 0;
+                m_header.style.paddingRight = 0;
+                m_header.style.paddingTop = 0;
 
-            m_header.style.backgroundColor = backcol;
-            m_header.style.borderBottomLeftRadius = 4;
-            m_header.style.borderBottomRightRadius = 4;
-            m_header.style.borderTopLeftRadius = 4;
-            m_header.style.borderTopRightRadius = 4;
-            m_header.style.borderBottomColor = bordercol;
+                m_header.style.backgroundColor = backcol;
+                m_header.style.borderBottomLeftRadius = 4;
+                m_header.style.borderBottomRightRadius = 4;
+                m_header.style.borderTopLeftRadius = 4;
+                m_header.style.borderTopRightRadius = 4;
+                m_header.style.borderBottomColor = bordercol;
+            }
+            else
+            {
+                m_header.style.marginBottom = 0;
+                m_header.style.marginLeft = 0;
+                m_header.style.marginRight = 0;
+                m_header.style.marginTop = 0;
+                m_header.style.borderBottomWidth = 0;
+                m_header.style.borderLeftWidth = 0;
+                m_header.style.borderRightWidth = 0;
+                m_header.style.borderTopWidth = 0;
+                m_header.style.paddingBottom = 0;
+                m_header.style.paddingLeft = 0;
+                m_header.style.paddingRight = 0;
+                m_header.style.paddingTop = 0;
+            }
 
             var toggle = this.Q<Toggle>();
             toggle.RemoveManipulator(FI_m_Clickable.GetValue(toggle) as Clickable);
@@ -65,11 +84,19 @@ namespace jp.lilxyzw.shadercore
             toggle.style.paddingTop = 0;
             m_header.Add(toggle);
 
+            if (!isHeader)
+            {
+                m_header.style.flexDirection = FlexDirection.Row;
+                toggle.style.width = 12;
+                style.marginBottom = -2;
+                style.marginTop = -2;
+            }
+
             hierarchy.Add(m_header);
             hierarchy.Add(contentContainer);
 
             contentContainer.style.marginBottom = 0;
-            contentContainer.style.marginLeft = 16;
+            contentContainer.style.marginLeft = isHeader ? 16 : 12;
             contentContainer.style.marginRight = 0;
             contentContainer.style.marginTop = 0;
             contentContainer.style.borderBottomWidth = 0;
@@ -83,19 +110,19 @@ namespace jp.lilxyzw.shadercore
 
             toggle.RegisterCallback<PointerDownEvent>(e =>
             {
-                if (e.button == 0) m_header.style.backgroundColor = backcolPale;
+                if (isHeader && e.button == 0) m_header.style.backgroundColor = backcolPale;
             });
 
             toggle.RegisterCallback<PointerLeaveEvent>(e =>
             {
-                m_header.style.backgroundColor = backcol;
+                if (isHeader) m_header.style.backgroundColor = backcol;
             });
 
             value = FoldoutSaver.IsOpened(key);
 
             toggle.RegisterCallback<PointerUpEvent>(e =>
             {
-                m_header.style.backgroundColor = backcol;
+                if (isHeader) m_header.style.backgroundColor = backcol;
                 if (e.button == 0)
                 {
                     value = !value;
