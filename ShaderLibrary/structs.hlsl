@@ -44,6 +44,12 @@ struct SCLightData
 {
     half3 direction;
     half3 color; // ライト色 * 減衰 * 影
+    bool useShadow;
+    uint type;
+    // 0: Unknown
+    // 1: Directional
+    // 2: Point
+    // 3: Spot
 };
 
 // ピクセルシェーダーのみで使える構造体
