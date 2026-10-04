@@ -68,6 +68,9 @@ msgstr "Multiply Albedo"
 msgid "__MaskChannel"
 msgstr "Mask Channel"
 
+msgid "__Remap"
+msgstr "Remap"
+
 msgid "__Stencil"
 msgstr "Stencil"
 
@@ -97,3 +100,9 @@ msgstr "Create Texture"
 
 msgid "__EditTexture"
 msgstr "Edit Texture"
+
+msgid "__Normal"
+msgstr "Normal"
+
+msgid "__Invert"
+msgstr "Invert"
