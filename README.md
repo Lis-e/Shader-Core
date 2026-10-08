@@ -1,3 +1,24 @@
+# Lis_e's Fork of Shader Core
+
+りぜさんがフォークして変更を加えているものです。
+
+## 変更内容
+
+- `SCGetFrameDepth` の UV 反転・幾何計算修正 (`birp.hlsl`, `urp.hlsl`):
+  - 正規化 UV から解像度 `_ScreenParams.y` を減算していたものを `1.0 - uv.y` に変更。
+  - サンプリング用 UV と NDC 座標計算用 UV を分離し、D3D11 環境下で `pos.y` が二重反転してオフセンター投影補正項（VR左右目等の傾き）が狂う問題を解消。
+- `SCGetFrameColor` の画面端クランプ処理追加 (`birp.hlsl`):
+  - `SCGetFrameDepth` と同様に `ClampScreenUV(uv)` を追加し、VR（Single Pass Stereo）や屈折処理等での境界はみ出し・グリッチを防止。
+- `vertex.uvDepth` / `vertex.uvColor` の仕様整理 (`structs.hlsl`):
+  - 高レベル API（`SCGetFrameDepth` / `SCGetFrameColor`）に渡す推奨正立スクリーン UV（`uvColor`）と、低レベル直接サンプリング用反転済み UV（`uvDepth`）の役割と推奨用法を明確化。
+- カスタムテクスチャ生成時のミップストリーミング設定追加 (`Editor/CustomTextures`):
+  - `Masks`, `Mask`, `Gradients` の各インポーターで、生成テクスチャの Streaming Mipmaps 有効/無効を設定・インスペクターから切り替え可能に拡張。
+- ドキュメント類の `.meta` ファイル追加:
+  - このリポジトリごとPackagesに入れたかったので。
+
+---
+
+
 Shader Core
 ====
 
