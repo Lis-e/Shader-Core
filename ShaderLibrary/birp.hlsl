@@ -267,12 +267,13 @@ float SCGetFrameDepth(float2 uv)
     if(SCIsFrameDepthGenerated())
     {
         uv = ClampScreenUV(uv);
+        float2 sampleUV = uv;
         #if UNITY_UV_STARTS_AT_TOP
-            if(_ProjectionParams.x > 0) uv.y = 1.0 - uv.y;
+            if(_ProjectionParams.x > 0) sampleUV.y = 1.0 - sampleUV.y;
         #else
-            if(_ProjectionParams.x < 0) uv.y = 1.0 - uv.y;
+            if(_ProjectionParams.x < 0) sampleUV.y = 1.0 - sampleUV.y;
         #endif
-        float cameraDepthTexture = SampleDepth(uv);
+        float cameraDepthTexture = SampleDepth(sampleUV);
         #if UNITY_REVERSED_Z
             if(cameraDepthTexture == 0) return 1.0/0.0;
         #else
@@ -298,6 +299,7 @@ float4 SCGetFrameColor(float2 uv)
 {
     if(SCIsFrameColorGenerated())
     {
+        uv = ClampScreenUV(uv);
         return SampleScreen(uv);
     }
     else

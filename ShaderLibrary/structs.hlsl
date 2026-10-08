@@ -22,8 +22,8 @@ struct SCVertexData
     half4 color; // Vertex Shader Only
     bool isFront; // Pixel Shader Only
     float4 positionRaw; // Pixel Shader Only, SV_Position
-    float2 uvDepth; // Pixel Shader Only, used for sample depth texture
-    float2 uvColor; // Pixel Shader Only, used for sample color texture
+    float2 uvDepth; // Pixel Shader Only, pre-flipped for raw depth sampling (e.g. SampleDepth(vertex.uvDepth))
+    float2 uvColor; // Pixel Shader Only, normalized screen UV (recommended for SCGetFrameDepth(uv) & SCGetFrameColor(uv))
 
     float shadowOffset; // Shadow Offset
 };
